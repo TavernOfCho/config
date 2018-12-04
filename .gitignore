@@ -1,0 +1,11 @@
+/docker-compose.override.yaml
+/docker-compose.override.yml
+/docker/db
+
+# IDE config
+.idea/
+.DS_Store
+
+/website
+/mobile
+/api
