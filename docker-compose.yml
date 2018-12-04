@@ -3,7 +3,7 @@ version: '3.4'
 services:
   php:
     image: ${CONTAINER_REGISTRY_BASE}/php
-    container_name: esgi-apiplaform-php
+    container_name: wow-collection-php
     build:
       context: ./api
       target: api_platform_php
@@ -23,7 +23,7 @@ services:
 
   api:
     image: ${CONTAINER_REGISTRY_BASE}/nginx
-    container_name: esgi-apiplaform-api
+    container_name: wow-collection-api
     build:
       context: ./api
       target: api_platform_nginx
@@ -39,7 +39,7 @@ services:
 
   cache-proxy:
     image: ${CONTAINER_REGISTRY_BASE}/varnish
-    container_name: esgi-apiplaform-cache-proxy
+    container_name: wow-collection-cache-proxy
     build:
       context: ./api
       target: api_platform_varnish
@@ -57,7 +57,7 @@ services:
   db:
     # In production, you may want to use a managed database service
     image: postgres:9.6-alpine
-    container_name: esgi-apiplaform-db
+    container_name: wow-collection-db
     environment:
       - POSTGRES_DB=api
       - POSTGRES_USER=api-platform
@@ -74,7 +74,7 @@ services:
     # Use a static website hosting service in production
     # See https://github.com/facebookincubator/create-react-app/blob/master/packages/react-scripts/template/README.md#deployment
     image: ${CONTAINER_REGISTRY_BASE}/client
-    container_name: esgi-apiplaform-client
+    container_name: wow-collection-client
     build:
       context: ./client
       cache_from:
@@ -89,7 +89,7 @@ services:
     # Use a static website hosting service in production
     # See https://github.com/facebookincubator/create-react-app/blob/master/packages/react-scripts/template/README.md#deployment
     image: ${CONTAINER_REGISTRY_BASE}/admin
-    container_name: esgi-apiplaform-admin
+    container_name: wow-collection-admin
     build:
       context: ./admin
       cache_from:
@@ -102,24 +102,24 @@ services:
       
   php-fpm:
     build:
-      context: site/engine/php-fpm
-    container_name: esgi-apiplaform-php-fpm
+      context: website/engine/php-fpm
+    container_name: wow-collection-php-fpm
     working_dir: /application
     volumes:
-    - ./site:/application
-    - ./site/engine/php-fpm/php-ini-overrides.ini:/etc/php/7.2/fpm/conf.d/99-overrides.ini
+      - ./website:/application
+      - ./website/engine/php-fpm/php-ini-overrides.ini:/etc/php/7.2/fpm/conf.d/99-overrides.ini
 
-  site:
+  website:
     image: nginx:stable
-    container_name: esgi-apiplatform-site
+    container_name: wow-collection-website
     working_dir: /application
     volumes:
-      - ./site:/application
-      - ./site/engine/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./website:/application
+      - ./website/engine/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
 
   h2-proxy:
     # Don't use this proxy in prod
-    container_name: esgi-apiplaform-h2-proxy
+    container_name: wow-collection-h2-proxy
     build:
       context: ./h2-proxy
     depends_on:
@@ -127,7 +127,7 @@ services:
       - admin
       - api
       - cache-proxy
-      - site
+      - website
       - php-fpm
     ports:
       - "8050:80" #Client HTTP
