@@ -6,6 +6,8 @@
 .idea/
 .DS_Store
 
-/website
-/mobile
+/admin
 /api
+/client
+/mobile
+/website
