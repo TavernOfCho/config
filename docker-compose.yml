@@ -18,6 +18,7 @@ services:
     # Comment out these volumes in production
     volumes:
        - ./api:/srv/api:rw,cached
+       - ./logs/api:/api/var/log:cached
       # If you develop on Linux, uncomment the following line to use a bind-mounted host directory instead
 #      - ./api/var:/srv/api/var:rw
 
@@ -36,6 +37,7 @@ services:
     # Comment out this volume in production
     volumes:
       - ./api/public:/srv/api/public:ro
+      - ./logs/api_nginx:/var/log/nginx:cached
 
   cache-proxy:
     image: ${CONTAINER_REGISTRY_BASE}/varnish
@@ -108,6 +110,7 @@ services:
     volumes:
       - ./website:/application
       - ./website/engine/php-fpm/php-ini-overrides.ini:/etc/php/7.2/fpm/conf.d/99-overrides.ini
+      - ./logs/website:/application/var/log:cached
 
   website:
     image: nginx:stable
@@ -116,6 +119,19 @@ services:
     volumes:
       - ./website:/application
       - ./website/engine/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./logs/website_nginx:/var/log/nginx:cached
+
+  elk:
+    image: willdurand/elk
+    ports:
+      - "8055:80"
+    volumes:
+      - ./elk/logstash:/etc/logstash:cached
+      - ./elk/logstash/patterns:/opt/logstash/patterns:cached
+      - ./logs/api:/api/var/log:cached
+      - ./logs/api_nginx:/var/log/nginx:cached
+      - ./logs/website_nginx:/application/log/website_nginx:cached
+      - ./logs/website:/application/log/website:cached
 
   h2-proxy:
     # Don't use this proxy in prod
