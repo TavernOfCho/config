@@ -1,6 +1,36 @@
 version: '3.4'
 
 services:
+  client:
+    image: ${CONTAINER_REGISTRY_BASE}/client
+    container_name: wow-collection-client
+    build:
+      context: ./client
+      cache_from:
+        - ${CONTAINER_REGISTRY_BASE}/client
+    env_file:
+      - ./client/.env
+    volumes:
+      - ./client:/usr/src/client:rw,cached
+      - /usr/src/client/node_modules
+    ports:
+      - "8050:3000"
+
+  admin:
+    image: ${CONTAINER_REGISTRY_BASE}/admin
+    container_name: wow-collection-admin
+    build:
+      context: ./admin
+      cache_from:
+        - ${CONTAINER_REGISTRY_BASE}/admin
+    env_file:
+      - ./admin/.env
+    volumes:
+      - ./admin:/usr/src/admin:rw,cached
+      - /usr/src/admin/node_modules
+    ports:
+      - "8051:3000"
+
   php:
     image: ${CONTAINER_REGISTRY_BASE}/php
     container_name: wow-collection-php
@@ -15,11 +45,8 @@ services:
       - db
     env_file:
       - ./api/.env
-    # Comment out these volumes in production
     volumes:
        - ./api:/srv/api:rw,cached
-      # If you develop on Linux, uncomment the following line to use a bind-mounted host directory instead
-#      - ./api/var:/srv/api/var:rw
 
   api:
     image: ${CONTAINER_REGISTRY_BASE}/nginx
@@ -33,9 +60,10 @@ services:
         - ${CONTAINER_REGISTRY_BASE}/varnish
     depends_on:
       - php
-    # Comment out this volume in production
     volumes:
       - ./api/public:/srv/api/public:ro
+    ports:
+      - '8052:80'
 
   cache-proxy:
     image: ${CONTAINER_REGISTRY_BASE}/varnish
@@ -53,53 +81,21 @@ services:
       - ./api/docker/varnish/conf:/usr/local/etc/varnish:ro
     tmpfs:
       - /usr/local/var/varnish:exec
+    ports:
+      - "8053:80"
 
   db:
-    # In production, you may want to use a managed database service
     image: postgres:9.6-alpine
     container_name: wow-collection-db
     environment:
       - POSTGRES_DB=api
       - POSTGRES_USER=api-platform
-      # You should definitely change the password in production
       - POSTGRES_PASSWORD=!ChangeMe!
     volumes:
-       - db-data:/var/lib/postgresql/data:rw
-      # You may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
-#      - ./docker/db/data:/var/lib/postgresql/data:rw
+      - ./docker/db/data:/var/lib/postgresql/data:rw
     ports:
       - "5432:5432"
 
-  client:
-    # Use a static website hosting service in production
-    # See https://github.com/facebookincubator/create-react-app/blob/master/packages/react-scripts/template/README.md#deployment
-    image: ${CONTAINER_REGISTRY_BASE}/client
-    container_name: wow-collection-client
-    build:
-      context: ./client
-      cache_from:
-        - ${CONTAINER_REGISTRY_BASE}/client
-    env_file:
-      - ./client/.env
-    volumes:
-      - ./client:/usr/src/client:rw,cached
-      - /usr/src/client/node_modules
-
-  admin:
-    # Use a static website hosting service in production
-    # See https://github.com/facebookincubator/create-react-app/blob/master/packages/react-scripts/template/README.md#deployment
-    image: ${CONTAINER_REGISTRY_BASE}/admin
-    container_name: wow-collection-admin
-    build:
-      context: ./admin
-      cache_from:
-        - ${CONTAINER_REGISTRY_BASE}/admin
-    env_file:
-      - ./admin/.env
-    volumes:
-      - ./admin:/usr/src/admin:rw,cached
-      - /usr/src/admin/node_modules
-      
   php-fpm:
     build:
       context: website/engine/php-fpm
@@ -116,26 +112,5 @@ services:
     volumes:
       - ./website:/application
       - ./website/engine/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
-
-  h2-proxy:
-    # Don't use this proxy in prod
-    container_name: wow-collection-h2-proxy
-    build:
-      context: ./h2-proxy
-    depends_on:
-      - client
-      - admin
-      - api
-      - cache-proxy
-      - website
-      - php-fpm
     ports:
-      - "8050:80" #Client HTTP
-      - "8051:81" #Admin HTTP
-      - "8052:8080" #API HTTP
-      - "8053:8081" #Cache-Proxy HTTP
-      - "8054:8082" #Site HTTP
-    volumes:
-      - ./h2-proxy/conf.d:/etc/nginx/conf.d
-volumes:
-  db-data: {}
+      - '8054:80'
