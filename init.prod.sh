@@ -10,4 +10,4 @@ done
 
 git checkout -f
 git pull
-cp docker-compose.prod.yml docker-compose.yml
+mv docker-compose.prod.yml docker-compose.yml
