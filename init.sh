@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-remotes=('client' 'mobile' 'api' 'website' 'admin')
+remotes=('client' 'api' 'website' 'admin')
 
 for remote in ${remotes[@]}; do
 	if [[ ! -d ${remote} ]]; then
