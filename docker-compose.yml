@@ -108,3 +108,13 @@ services:
       - ./logs/api_nginx:/var/log/nginx
     ports:
       - "8055:80"
+      
+  website_server:
+    build: './website/server'
+    container_name: wow-collection-nodejs-server
+    volumes:
+      - './website/server:/home/node/app'
+    working_dir: '/home/node/app'
+    command: 'npm start'
+    ports:
+    - "8056:3000"
