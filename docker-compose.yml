@@ -118,3 +118,13 @@ services:
     command: 'npm start'
     ports:
     - "8056:3000"
+    
+  website_client:
+    build: './website/client'
+    container_name: wow-collection-react-client
+    volumes:
+    - './website/client:/home/node/app'
+    working_dir: '/home/node/app'
+    command: 'yarn start'
+    ports:
+    - "8057:3000"
