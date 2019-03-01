@@ -108,23 +108,13 @@ services:
       - ./logs/api_nginx:/var/log/nginx
     ports:
       - "8055:80"
-      
-  website_server:
-    build: './website/server'
-    container_name: wow-collection-nodejs-server
-    volumes:
-      - './website/server:/home/node/app'
-    working_dir: '/home/node/app'
-    command: 'npm start'
-    ports:
-    - "8056:3000"
-    
-  website_client:
+          
+  website:
     build: './website/client'
-    container_name: wow-collection-react-client
+    container_name: wow-collection-website
     volumes:
     - './website/client:/home/node/app'
     working_dir: '/home/node/app'
     command: 'yarn start'
     ports:
-    - "8057:3000"
+    - "8054:3000"
