@@ -108,3 +108,13 @@ services:
       - ./logs/api_nginx:/var/log/nginx
     ports:
       - "8055:80"
+          
+  website:
+    build: './website'
+    container_name: wow-collection-website
+    volumes:
+    - './website:/app'
+    working_dir: '/app'
+    command: 'yarn start'
+    ports:
+    - "8054:3000"
