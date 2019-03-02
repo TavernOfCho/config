@@ -110,10 +110,10 @@ services:
       - "8055:80"
           
   website:
-    build: './website/client'
+    build: './website'
     container_name: wow-collection-website
     volumes:
-    - './website/client:/home/node/app'
+    - './website:/home/node/app'
     working_dir: '/home/node/app'
     command: 'yarn start'
     ports:
