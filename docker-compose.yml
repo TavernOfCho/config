@@ -107,8 +107,8 @@ services:
       - ./logs/api:/api/var/log
       - ./logs/api_nginx:/var/log/nginx
     ports:
-      - "8055:80"
-          
+      - "8055:80"    
+
   website:
     build: './website'
     container_name: wow-collection-website

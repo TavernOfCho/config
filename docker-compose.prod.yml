@@ -66,26 +66,15 @@ services:
     volumes:
       - ./docker/db/data:/var/lib/postgresql/data:rw
 
-#  php-fpm:
-#    build:
-#      context: website/engine/php-fpm
-#    container_name: wow-collection-php-fpm
-#    working_dir: /application
-#    volumes:
-#      - ./website:/application
-#      - ./website/engine/php-fpm/php-ini-overrides.ini:/etc/php/7.2/fpm/conf.d/99-overrides.ini
-#      - ./logs/website:/application/var/log
-
-#  website:
-#    image: nginx:stable
-#    container_name: wow-collection-website
-#    working_dir: /application
-#    volumes:
-#      - ./website:/application
-#      - ./website/engine/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
-#      - ./logs/website_nginx:/var/log/nginx
-#    ports:
-#      - '127.0.0.1:8054:80'
+  website:
+      build: './website'
+      container_name: wow-collection-website
+      volumes:
+          - './website:/app'
+      working_dir: '/app'
+      command: 'yarn start'
+      ports:
+          - "127.0.0.1:8054:3000"
 
   elk:
     image: willdurand/elk
