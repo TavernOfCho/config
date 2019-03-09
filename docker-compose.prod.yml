@@ -23,7 +23,8 @@ services:
     image: ${CONTAINER_REGISTRY_BASE}/nginx
     container_name: wow-collection-api
     build:
-      context: ./api
+      context: ./api/
+      dockerfile: ./api/Dockerfile.prod
       target: api_platform_nginx
       cache_from:
         - ${CONTAINER_REGISTRY_BASE}/php
