@@ -2,7 +2,7 @@
 
 remotes=('api' 'website')
 
-if [[ $PWD != "WowCollection" ]]; then
+if [[ $(basename $PWD) != "WowCollection" ]]; then
 	echo "ERROR ! You need to run this script from the WowCollection folder."
 	exit
 fi
