@@ -13,8 +13,6 @@ services:
     volumes:
       - ./client:/usr/src/client:rw,cached
       - /usr/src/client/node_modules
-    ports:
-      - "8050:3000"
 
   admin:
     image: ${CONTAINER_REGISTRY_BASE}/admin
@@ -28,8 +26,6 @@ services:
     volumes:
       - ./admin:/usr/src/admin:rw,cached
       - /usr/src/admin/node_modules
-    ports:
-      - "8051:3000"
 
   php:
     image: ${CONTAINER_REGISTRY_BASE}/php
@@ -64,8 +60,6 @@ services:
     volumes:
       - ./api/public:/srv/api/public:ro
       - ./logs/api_nginx:/var/log/nginx
-    ports:
-      - '8052:80'
 
   cache-proxy:
     image: ${CONTAINER_REGISTRY_BASE}/varnish
@@ -83,8 +77,6 @@ services:
       - ./api/docker/varnish/conf:/usr/local/etc/varnish:ro
     tmpfs:
       - /usr/local/var/varnish:exec
-    ports:
-      - "8053:80"
 
   db:
     image: postgres:9.6-alpine
@@ -106,8 +98,6 @@ services:
       - ./elk/logstash/patterns:/opt/logstash/patterns
       - ./logs/api:/api/var/log
       - ./logs/api_nginx:/var/log/nginx
-    ports:
-      - "8055:80"    
 
   website:
     build: './website'
@@ -116,5 +106,22 @@ services:
     - './website:/app'
     working_dir: '/app'
     command: 'yarn start'
+
+  h2-proxy:
+    container_name: wow-collection-h2_proxy
+    build:
+      context: ./h2-proxy
+    depends_on:
+      - client
+      - admin
+      - api
+      - cache-proxy
+      - website
+      - elk
     ports:
-    - "8054:3000"
+      - "8050:443"  #Client
+      - "8051:444"  # Admin
+      - "8052:8052" # Api
+      - "8053:8053" # Api-Cached
+      - "8054:445"  # Website
+      - "8055:8055" # ELK 
