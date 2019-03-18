@@ -98,6 +98,7 @@ services:
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:6.6.0
+    container_name: wow-collection-elasticsearch
     volumes:
       - elasticdata:/usr/share/elasticsearch/data
     ports:
@@ -122,3 +123,6 @@ services:
       - "8052:8052" # Api
       - "8053:8053" # Api-Cached
       - "8054:445"  # Website
+
+volumes:
+  elasticdata: {}
