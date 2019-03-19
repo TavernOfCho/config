@@ -1,4 +1,4 @@
-WowCollection
+TavernOfCho
 =============
 
 Install
