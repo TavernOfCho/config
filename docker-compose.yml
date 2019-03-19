@@ -3,7 +3,7 @@ version: '3.4'
 services:
   client:
     image: ${CONTAINER_REGISTRY_BASE}/client
-    container_name: wow-collection-client
+    container_name: tavern-of-cho-client
     build:
       context: ./client
       cache_from:
@@ -16,7 +16,7 @@ services:
 
   admin:
     image: ${CONTAINER_REGISTRY_BASE}/admin
-    container_name: wow-collection-admin
+    container_name: tavern-of-cho-admin
     build:
       context: ./admin
       cache_from:
@@ -29,7 +29,7 @@ services:
 
   php:
     image: ${CONTAINER_REGISTRY_BASE}/php
-    container_name: wow-collection-php
+    container_name: tavern-of-cho-php
     build:
       context: ./api
       target: api_platform_php
@@ -47,7 +47,7 @@ services:
 
   api:
     image: ${CONTAINER_REGISTRY_BASE}/nginx
-    container_name: wow-collection-api
+    container_name: tavern-of-cho-api
     build:
       context: ./api
       target: api_platform_nginx
@@ -63,7 +63,7 @@ services:
 
   cache-proxy:
     image: ${CONTAINER_REGISTRY_BASE}/varnish
-    container_name: wow-collection-cache-proxy
+    container_name: tavern-of-cho-cache-proxy
     build:
       context: ./api
       target: api_platform_varnish
@@ -80,7 +80,7 @@ services:
 
   db:
     image: postgres:9.6-alpine
-    container_name: wow-collection-db
+    container_name: tavern-of-cho-db
     environment:
       - POSTGRES_DB=api
       - POSTGRES_USER=api-platform
@@ -92,7 +92,7 @@ services:
 
   elk:
     image: willdurand/elk
-    container_name: wow-collection-elk
+    container_name: tavern-of-cho-elk
     volumes:
       - ./elk/logstash:/etc/logstash
       - ./elk/logstash/patterns:/opt/logstash/patterns
@@ -101,14 +101,14 @@ services:
 
   website:
     build: './website'
-    container_name: wow-collection-website
+    container_name: tavern-of-cho-website
     volumes:
     - './website:/app'
     working_dir: '/app'
     command: 'yarn start'
 
   h2-proxy:
-    container_name: wow-collection-h2_proxy
+    container_name: tavern-of-cho-h2_proxy
     build:
       context: ./h2-proxy
     depends_on:
