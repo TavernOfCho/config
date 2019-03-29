@@ -36,7 +36,6 @@ services:
       cache_from:
         - ${CONTAINER_REGISTRY_BASE}/php
         - ${CONTAINER_REGISTRY_BASE}/nginx
-        - ${CONTAINER_REGISTRY_BASE}/varnish
     depends_on:
       - db
     env_file:
@@ -53,28 +52,10 @@ services:
       cache_from:
         - ${CONTAINER_REGISTRY_BASE}/php
         - ${CONTAINER_REGISTRY_BASE}/nginx
-        - ${CONTAINER_REGISTRY_BASE}/varnish
     depends_on:
       - php
     volumes:
       - ./api/public:/srv/api/public:ro
-
-  cache-proxy:
-    image: ${CONTAINER_REGISTRY_BASE}/varnish
-    container_name: tavern-of-cho-cache-proxy
-    build:
-      context: ./api
-      target: api_platform_varnish
-      cache_from:
-        - ${CONTAINER_REGISTRY_BASE}/php
-        - ${CONTAINER_REGISTRY_BASE}/nginx
-        - ${CONTAINER_REGISTRY_BASE}/varnish
-    depends_on:
-      - api
-    volumes:
-      - ./api/docker/varnish/conf:/usr/local/etc/varnish:ro
-    tmpfs:
-      - /usr/local/var/varnish:exec
 
   db:
     image: postgres:9.6-alpine
@@ -84,7 +65,7 @@ services:
       - POSTGRES_USER=api-platform
       - POSTGRES_PASSWORD=!ChangeMe!
     volumes:
-      - ./docker/db/data:/var/lib/postgresql/data:rw
+      - db-data:/var/lib/postgresql/data:rw
     ports:
       - "5432:5432"
 
@@ -115,14 +96,13 @@ services:
       - client
       - admin
       - api
-      - cache-proxy
       - website
     ports:
       - "8050:443"  #Client
       - "8051:444"  # Admin
       - "8052:8052" # Api
-      - "8053:8053" # Api-Cached
       - "8054:445"  # Website
 
 volumes:
   elasticdata: {}
+  db-data: {}
