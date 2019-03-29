@@ -58,7 +58,7 @@ services:
       - ./api/public:/srv/api/public:ro
 
   db:
-    image: postgres:9.6-alpine
+    image: postgres:10.2-alpine
     container_name: tavern-of-cho-db
     environment:
       - POSTGRES_DB=api
