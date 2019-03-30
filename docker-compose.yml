@@ -79,14 +79,26 @@ services:
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:6.6.0
-    container_name: wow-collection-elasticsearch
+    container_name: tavern-of-cho-elasticsearch
     volumes:
       - elasticdata:/usr/share/elasticsearch/data
     ports:
       - '9200:9200'
       - '9300:9300'
     environment:
-      - discovery.type=single-node    
+      - discovery.type=single-node
+
+  mercure:
+    image: dunglas/mercure
+    container_name: tavern-of-cho-mercure
+    environment:
+      - JWT_KEY=!UnsecureChangeMe!
+      - ALLOW_ANONYMOUS=1
+      - CORS_ALLOWED_ORIGINS=*
+      - PUBLISH_ALLOWED_ORIGINS=http://localhost:8053
+      - DEMO=1
+    ports:
+      - "8053:80"
 
   h2-proxy:
     container_name: tavern-of-cho-h2_proxy
