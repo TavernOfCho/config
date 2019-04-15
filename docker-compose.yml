@@ -106,6 +106,8 @@ services:
     - './website:/app'
     working_dir: '/app'
     command: 'yarn start'
+    ports: 
+      - "9005:9005"  #Firebase
 
   h2-proxy:
     container_name: tavern-of-cho-h2_proxy
