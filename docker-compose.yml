@@ -36,14 +36,12 @@ services:
       cache_from:
         - ${CONTAINER_REGISTRY_BASE}/php
         - ${CONTAINER_REGISTRY_BASE}/nginx
-        - ${CONTAINER_REGISTRY_BASE}/varnish
     depends_on:
       - db
     env_file:
       - ./api/.env
     volumes:
       - ./api:/srv/api:rw,cached
-      - ./logs/api:/api/var/log
 
   api:
     image: ${CONTAINER_REGISTRY_BASE}/nginx
@@ -54,60 +52,55 @@ services:
       cache_from:
         - ${CONTAINER_REGISTRY_BASE}/php
         - ${CONTAINER_REGISTRY_BASE}/nginx
-        - ${CONTAINER_REGISTRY_BASE}/varnish
     depends_on:
       - php
     volumes:
       - ./api/public:/srv/api/public:ro
-      - ./logs/api_nginx:/var/log/nginx
-
-  cache-proxy:
-    image: ${CONTAINER_REGISTRY_BASE}/varnish
-    container_name: tavern-of-cho-cache-proxy
-    build:
-      context: ./api
-      target: api_platform_varnish
-      cache_from:
-        - ${CONTAINER_REGISTRY_BASE}/php
-        - ${CONTAINER_REGISTRY_BASE}/nginx
-        - ${CONTAINER_REGISTRY_BASE}/varnish
-    depends_on:
-      - api
-    volumes:
-      - ./api/docker/varnish/conf:/usr/local/etc/varnish:ro
-    tmpfs:
-      - /usr/local/var/varnish:exec
 
   db:
-    image: postgres:9.6-alpine
+    image: postgres:10.2-alpine
     container_name: tavern-of-cho-db
     environment:
       - POSTGRES_DB=api
       - POSTGRES_USER=api-platform
       - POSTGRES_PASSWORD=!ChangeMe!
     volumes:
-      - ./docker/db/data:/var/lib/postgresql/data:rw
+      - db-data:/var/lib/postgresql/data:rw
     ports:
       - "5432:5432"
 
-  elk:
-    image: willdurand/elk
-    container_name: tavern-of-cho-elk
-    volumes:
-      - ./elk/logstash:/etc/logstash
-      - ./elk/logstash/patterns:/opt/logstash/patterns
-      - ./logs/api:/api/var/log
-      - ./logs/api_nginx:/var/log/nginx
-
   website:
-    build: './website'
+    build: ./website
     container_name: tavern-of-cho-website
     volumes:
-    - './website:/app'
-    working_dir: '/app'
+    - ./website:/app
+    working_dir: /app
     command: 'yarn start'
     ports: 
       - "9005:9005"  #Firebase
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.6.0
+    container_name: tavern-of-cho-elasticsearch
+    volumes:
+      - elasticdata:/usr/share/elasticsearch/data
+    ports:
+      - '9200:9200'
+      - '9300:9300'
+    environment:
+      - discovery.type=single-node
+
+  mercure:
+    image: dunglas/mercure
+    container_name: tavern-of-cho-mercure
+    environment:
+      - JWT_KEY=!UnsecureChangeMe!
+      - ALLOW_ANONYMOUS=1
+      - CORS_ALLOWED_ORIGINS=*
+      - PUBLISH_ALLOWED_ORIGINS=http://localhost:8053
+      - DEMO=1
+    ports:
+      - "8053:80"
 
   h2-proxy:
     container_name: tavern-of-cho-h2_proxy
@@ -117,13 +110,13 @@ services:
       - client
       - admin
       - api
-      - cache-proxy
       - website
-      - elk
     ports:
       - "8050:443"  #Client
       - "8051:444"  # Admin
       - "8052:8052" # Api
-      - "8053:8053" # Api-Cached
       - "8054:445"  # Website
-      - "8055:8055" # ELK 
+
+volumes:
+  elasticdata: {}
+  db-data: {}
