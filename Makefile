@@ -9,6 +9,7 @@ RUN_API             = $(DOCKER_COMPOSE_RUN) php
 RUN_WEBSITE         = $(DOCKER_COMPOSE_RUN) website
 RUN_CLIENT          = $(DOCKER_COMPOSE_RUN) client
 RUN_ADMIN           = $(DOCKER_COMPOSE_RUN) admin
+EXEC_SYMFONY		= $(DOCKER_COMPOSE_EXEC) php bin/console
 
 init: ## Launch the init script to init all the project dependencies from their remote
 	./scripts/init.sh
@@ -25,9 +26,32 @@ install-deps: ## Install all the project dependencies (yarn/composer/docker)
 
 init-full: init install-deps
 
+.PHONY: init update-deps install-deps init-full
+
+# Docker
+docker-up: ## Start the docker-compose
+	docker-compose up
+
+docker-up-d: ## Start the docker-compose in background
+	docker-compose up -d
+
+docker-up-b: ## Start the docker-compose and rebuild containers
+	docker-compose up --build
+
+.PHONY: docker-up docker-up-d docker-up-b
+# Symfony
+
+schema-update: ## Update the API database schema
+	$(EXEC_SYMFONY) doctrine:schema:update --force
+
+composer-dump-dev: ## Run the composer dump-env dev for the API
+	$(EXEC_API) composer dump-env dev
+
+.PHONY: schema-update composer-dump-dev
+
 help: ## Show this help.
 	@fgrep -h "##" $(MAKEFILE_LIST) | fgrep -v fgrep | sed -e 's/\\$$//' | sed -e 's/##//'
 
 .DEFAULT_GOAL := help
 
-.PHONY: init update-deps install-deps init-full help
+.PHONY: help
