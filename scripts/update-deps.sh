@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 if [[ $(basename $PWD) != "TavernOfCho" ]]; then
 	echo "ERROR ! You need to run this script from the TavernOfCho folder."
