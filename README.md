@@ -35,7 +35,7 @@ Accessing the project
 * Client  : https://127.0.0.1:8050
 * Admin   : https://127.0.0.1:8051
 * API     : https://127.0.0.1:8052
-* Website : https://127.0.0.1:8053
+* Website : https://127.0.0.1:8054
 * Mercure : https://127.0.0.1:8053
 
 ### In prod
