@@ -29,18 +29,18 @@ init-full: init install-deps
 .PHONY: init update-deps install-deps init-full
 
 # Docker
-docker-up: ## Start the docker-compose
+start: ## Start the docker-compose
 	docker-compose up
 
-docker-up-d: ## Start the docker-compose in background
+start-d: ## Start the docker-compose in background
 	docker-compose up -d
 
-docker-up-b: ## Start the docker-compose and rebuild containers
+start-b: ## Start the docker-compose and rebuild containers
 	docker-compose up --build
 
 .PHONY: docker-up docker-up-d docker-up-b
-# Symfony
 
+# Symfony
 schema-update: ## Update the API database schema
 	$(EXEC_SYMFONY) doctrine:schema:update --force
 
