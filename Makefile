@@ -38,7 +38,7 @@ start-d: ## Start the docker-compose in background
 start-b: ## Start the docker-compose and rebuild containers
 	docker-compose up --build
 
-.PHONY: docker-up docker-up-d docker-up-b
+.PHONY: start start-d start-b
 
 # Symfony
 schema-update: ## Update the API database schema

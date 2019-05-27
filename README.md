@@ -19,6 +19,12 @@ If you want to know all the option available with make, just run :
 make help
 ```
 
+or simply :
+
+```bash
+make
+```
+
 The last step is to configure properly the ``.env.local`` file from the API and then launch the command ``make composer-dump-dev``.
 
 Deploying to Production 
