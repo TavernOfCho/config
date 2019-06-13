@@ -99,8 +99,6 @@ services:
       - CORS_ALLOWED_ORIGINS=*
       - PUBLISH_ALLOWED_ORIGINS=http://localhost:8053
       - DEMO=1
-    ports:
-      - "8053:80"
 
   h2-proxy:
     container_name: tavern-of-cho-h2_proxy
@@ -115,6 +113,7 @@ services:
       - "8050:443"  #Client
       - "8051:444"  # Admin
       - "8052:8052" # Api
+      - "8053:8053"   # Mercure
       - "8054:445"  # Website
 
 volumes:
